@@ -1,0 +1,13 @@
+.container {
+  max-width: 1200px;
+}
+
+.dishContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+h1 {
+  color: var(--text-main-color);
+}

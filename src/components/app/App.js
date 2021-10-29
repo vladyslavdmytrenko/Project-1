@@ -6,20 +6,41 @@ import DATA from '../../assets/data.json';
 import BasketButton from '../basket/basketButton/BasketButton';
 import BasketDetails from '../basket/basketDetails/BasketDetails';
 
+const ADD_ITEM = 'ADD_ITEM';
+const DELETE_ITEM = 'DELETE_ITEM';
+
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       dishes: DATA,
-      basket: [],
-      countBasketItem: 0,
+      basketItems: [],
+      basketCountItems: 0,
+      basketTotalPrice: 0,
       isBasketDetailOpen: false,
     };
   }
 
+  _basketItems = (action, data) => {
+    switch (action) {
+      case ADD_ITEM:
+        if (!this.state.basketItems.length) {
+          this.setState({ basketItems: [data] });
+          return;
+        }
+    }
+  };
+
   toggleBasketDetail = () => {
-    console.log(this.state.isBasketDetailOpen);
     this.setState({ isBasketDetailOpen: !this.state.isBasketDetailOpen });
+  };
+
+  addDishToBasket = (id, name, price) => {
+    this._updateBasket(ADD_ITEM, { id, name, price });
+  };
+
+  deleteDishFromBasket = (id) => {
+    this._updateBasket(DELETE_ITEM, id);
   };
 
   render() {

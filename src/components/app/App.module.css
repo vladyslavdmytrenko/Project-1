@@ -11,3 +11,9 @@
 h1 {
   color: var(--text-main-color);
 }
+
+header {
+  display: flex;
+  padding: 1rem;
+  justify-content: space-between;
+}

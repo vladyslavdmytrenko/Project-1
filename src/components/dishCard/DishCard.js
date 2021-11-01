@@ -3,7 +3,14 @@ import React from 'react';
 import style from './DishCard.module.css';
 import imageMeal from '../../assets/images/meal.png';
 
-const DishCard = ({ name, imgSrc, price, ingredients }) => {
+const DishCard = ({
+  id,
+  name,
+  imgSrc,
+  price,
+  ingredients,
+  addDishToBasket,
+}) => {
   return (
     <div className={style.container}>
       <div className={style.container_img}>
@@ -20,7 +27,12 @@ const DishCard = ({ name, imgSrc, price, ingredients }) => {
           </span>
         ))}
       </div>
-      <button className={style.btn}>Add to card</button>
+      <button
+        className={style.btn}
+        onClick={() => addDishToBasket(id, name, price)}
+      >
+        Add to card
+      </button>
     </div>
   );
 };

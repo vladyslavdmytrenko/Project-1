@@ -2,18 +2,17 @@ import React from 'react';
 
 import style from './App.module.css';
 import DishCard from '../dishCard/DishCard';
-import DATA from '../../assets/data.json';
 import BasketButton from '../basket/basketButton/BasketButton';
 import BasketDetails from '../basket/basketDetails/BasketDetails';
 import { ReactComponent as Logo } from '../../assets/images/logo.svg';
 import Search from '../search/Search';
-
+import dataApi from '../../api/data';
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      dishesRaw: DATA,
-      dishes: DATA,
+      dishesRaw: [],
+      dishes: [],
       basketItems: [],
       basketCountItems: 0,
       basketTotalPrice: 0,
@@ -22,11 +21,39 @@ class App extends React.Component {
     };
   }
 
+  componentDidMount = async () => {
+    const data = await dataApi.get('dish');
+    const basket = await dataApi.get('basket');
+    const [calcBasketCountItems, calcBasketTotalPrice] = this._calcBasketInfo(
+      basket.data
+    );
+
+    this.setState({
+      dishesRaw: data.data,
+      dishes: data.data,
+      basketItems: [...basket.data],
+      basketCountItems: calcBasketCountItems,
+      basketTotalPrice: calcBasketTotalPrice,
+    });
+  };
+
+  _calcBasketInfo = (basketItems) => {
+    const basketInfo = basketItems.reduce(
+      (prev, current) => {
+        prev[0] += current.count;
+        prev[1] += current.price;
+        return prev;
+      },
+      [0, 0]
+    );
+    return basketInfo;
+  };
+
   toggleBasketDetail = () => {
     this.setState({ isBasketDetailOpen: !this.state.isBasketDetailOpen });
   };
 
-  addDishToBasket = (id, name, price) => {
+  addDishToBasket = async (id, name, price) => {
     const existItemIdx = this.state.basketItems.findIndex(
       (item) => item.id === id
     );
@@ -35,13 +62,17 @@ class App extends React.Component {
     if (existItemIdx !== -1) {
       newBasketItems[existItemIdx].count++;
       newBasketItems[existItemIdx].price += price;
+      await dataApi.put('basket');
     } else {
-      newBasketItems.push({
+      let results = {
         id: id,
         name: name,
         price: price,
         count: 1,
-      });
+      };
+      const data = await dataApi.post('basket', results);
+      console.log(data);
+      newBasketItems.push(results);
     }
 
     this.setState({
@@ -56,14 +87,7 @@ class App extends React.Component {
       (item) => item.id !== id
     );
     const [calcBasketCountItems, calcBasketTotalPrice] =
-      filterBasketItems.reduce(
-        (prev, current) => {
-          prev[0] += current.count;
-          prev[1] += current.price;
-          return prev;
-        },
-        [0, 0]
-      );
+      this._calcBasketInfo(filterBasketItems);
 
     this.setState({
       basketItems: [...filterBasketItems],

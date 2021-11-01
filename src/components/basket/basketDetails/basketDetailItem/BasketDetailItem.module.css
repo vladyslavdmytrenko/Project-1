@@ -1,0 +1,22 @@
+.card {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: solid 0.15rem var(--text-main-color);
+  border-radius: 1rem;
+}
+.card h3 {
+  padding: 0;
+  margin: 0;
+}
+.card span {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1rem;
+}
+.card span:hover {
+  cursor: pointer;
+}

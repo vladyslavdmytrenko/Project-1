@@ -17,3 +17,14 @@ header {
   padding: 1rem;
   justify-content: space-between;
 }
+
+.logoContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.logoIcon {
+  margin-right: 1rem;
+  height: 4rem;
+}

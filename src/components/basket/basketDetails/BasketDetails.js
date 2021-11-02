@@ -1,11 +1,15 @@
 import React from 'react';
 
 import style from './BasketDetails.module.css';
-import BasketDetailItem from './basketDetailItem/BasketDetailItem';
+import BasketDetailItem from './BasketDetailItem/BasketDetailItem';
 
 const BasketDetails = (props) => {
   return (
-    <div className={`${style.cart} ${props.isHide || style.hide}`}>
+    <div
+      className={`${style.cart} ${
+        props.isBasketDetailHidden ? style.hide : ''
+      }`}
+    >
       <h2>
         Cart
         <span onClick={() => props.toggleBasketDetail()}>X</span>

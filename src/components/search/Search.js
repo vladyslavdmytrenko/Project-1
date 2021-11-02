@@ -9,7 +9,7 @@ const Search = (props) => {
       value={props.value}
       className={style.input}
       placeholder="Search by name or ingredient..."
-      onChange={(e) => props.onSearchChange(e.target.value.toLocaleLowerCase())}
+      onChange={(e) => props.onSearchChange(e)}
     />
   );
 };

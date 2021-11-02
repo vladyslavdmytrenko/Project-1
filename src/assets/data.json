@@ -47,12 +47,5 @@
       ]
     }
   ],
-  "basket": [
-    {
-      "id": 2,
-      "name": "Burger",
-      "price": 24,
-      "count": 1
-    }
-  ]
+  "basket": []
 }

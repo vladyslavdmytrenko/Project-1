@@ -7,6 +7,7 @@ import BasketDetails from '../basket/basketDetails/BasketDetails';
 import { ReactComponent as Logo } from '../../assets/images/logo.svg';
 import Search from '../search/Search';
 import dataApi from '../../api/data';
+import { ReactComponent as Loader } from '../../assets/images/loader.svg';
 class App extends React.Component {
   constructor() {
     super();
@@ -18,23 +19,35 @@ class App extends React.Component {
       basketTotalPrice: 0,
       isBasketDetailOpen: false,
       searchValue: '',
+      isLoading: false,
+      isRequestErr: null,
     };
   }
 
-  componentDidMount = async () => {
-    const data = await dataApi.get('dish');
-    const basket = await dataApi.get('basket');
-    const [calcBasketCountItems, calcBasketTotalPrice] = this._calcBasketInfo(
-      basket.data
-    );
+  _loadData = async () => {
+    this.setState({ isLoading: true });
+    try {
+      const data = await dataApi.get('dish');
+      const basket = await dataApi.get('basket');
+      const [calcBasketCountItems, calcBasketTotalPrice] = this._calcBasketInfo(
+        basket.data
+      );
+      this.setState({
+        dishesRaw: data.data,
+        dishes: data.data,
+        basketItems: [...basket.data],
+        basketCountItems: calcBasketCountItems,
+        basketTotalPrice: calcBasketTotalPrice,
+      });
+    } catch (e) {
+      this.setState({ isRequestErr: e.string() });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
 
-    this.setState({
-      dishesRaw: data.data,
-      dishes: data.data,
-      basketItems: [...basket.data],
-      basketCountItems: calcBasketCountItems,
-      basketTotalPrice: calcBasketTotalPrice,
-    });
+  componentDidMount = () => {
+    this._loadData();
   };
 
   _calcBasketInfo = (basketItems) => {
@@ -62,7 +75,9 @@ class App extends React.Component {
     if (existItemIdx !== -1) {
       newBasketItems[existItemIdx].count++;
       newBasketItems[existItemIdx].price += price;
-      await dataApi.put('basket');
+      await dataApi.put(`basket/${newBasketItems[existItemIdx].id}`, {
+        ...newBasketItems[existItemIdx],
+      });
     } else {
       let results = {
         id: id,
@@ -70,8 +85,7 @@ class App extends React.Component {
         price: price,
         count: 1,
       };
-      const data = await dataApi.post('basket', results);
-      console.log(data);
+      await dataApi.post('basket', results);
       newBasketItems.push(results);
     }
 
@@ -82,7 +96,8 @@ class App extends React.Component {
     });
   };
 
-  deleteDishFromBasket = (id) => {
+  deleteDishFromBasket = async (id) => {
+    await dataApi.delete(`basket/${id}`);
     const filterBasketItems = this.state.basketItems.filter(
       (item) => item.id !== id
     );
@@ -110,6 +125,12 @@ class App extends React.Component {
   };
 
   renderDish = () => {
+    if (this.state.isLoading) {
+      return <Loader />;
+    }
+    if (this.state.isRequestErr) {
+      return <h1>{this.state.isRequestErr}</h1>;
+    }
     return this.state.dishes.length ? (
       this.state.dishes.map((item) => (
         <DishCard

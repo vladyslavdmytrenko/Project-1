@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Loader from 'components/common/Loader';
-import { ReactComponent as DeleteIcon } from '../../../../assets/images/delete.svg';
+import { ReactComponent as DeleteIcon } from 'assets/images/delete.svg';
 
 import style from './BasketDetailItem.module.css';
 

@@ -4,9 +4,9 @@ import dataApi from 'api/data';
 import DishCard from './DishCard';
 import Loader from 'components/common/Loader';
 
-import style from './Dish.module.css';
+import style from './Dishes.module.css';
 
-class Dish extends React.Component {
+class Dishes extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -81,4 +81,4 @@ class Dish extends React.Component {
   }
 }
 
-export default Dish;
+export default Dishes;

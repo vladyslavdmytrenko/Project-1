@@ -14,7 +14,7 @@ class Basket extends React.Component {
       basketTotalPrice: 0,
       isBasketDetailHidden: true,
       isLoading: false,
-      isRequestErr: null,
+      requestErrMsg: null,
     };
   }
 
@@ -28,8 +28,9 @@ class Basket extends React.Component {
     }
   }
 
-  _onLoadChange = (isLoad) => {
-    this.props.this.setState({ isLoading: isLoad });
+  _onLoadChange = (isLoading) => {
+    this.props.onChangeBasketBusy(isLoading);
+    this.setState({ isLoading: isLoading });
   };
 
   _loadInitBasket = async () => {
@@ -45,8 +46,9 @@ class Basket extends React.Component {
         basketTotalPrice: calcBasketTotalPrice,
       });
     } catch (e) {
+      this.setState({ requestErrMsg: e.toString() });
     } finally {
-      this.setState({ isLoading: false });
+      this._onLoadChange(false);
     }
   };
 
@@ -71,7 +73,7 @@ class Basket extends React.Component {
       (item) => item.id === newItem.id
     );
     const newBasketItems = [...this.state.basketItems];
-    this._updateIsLoad(true);
+    this._onLoadChange(true);
     try {
       if (existItemIdx !== -1) {
         newBasketItems[existItemIdx].count++;
@@ -96,35 +98,42 @@ class Basket extends React.Component {
         basketTotalPrice: this.state.basketTotalPrice + newItem.price,
       });
     } catch (e) {
-      this.setState({ isRequestErr: e.toString() });
+      this.setState({ requestErrMsg: e.toString() });
     } finally {
       this.props.onCleanNewDishItemToBasket();
-      this.setState({ isLoading: false });
+      this._onLoadChange(false);
     }
   };
 
   deleteDishFromBasket = async (id) => {
-    await dataApi.delete(`basket/${id}`);
-    const filterBasketItems = this.state.basketItems.filter(
-      (item) => item.id !== id
-    );
-    const [calcBasketCountItems, calcBasketTotalPrice] =
-      this._calcBasketInfo(filterBasketItems);
+    this._onLoadChange(true);
+    try {
+      await dataApi.delete(`basket/${id}`);
+      const filterBasketItems = this.state.basketItems.filter(
+        (item) => item.id !== id
+      );
+      const [calcBasketCountItems, calcBasketTotalPrice] =
+        this._calcBasketInfo(filterBasketItems);
 
-    this.setState({
-      basketItems: [...filterBasketItems],
-      basketCountItems: calcBasketCountItems,
-      basketTotalPrice: calcBasketTotalPrice,
-    });
+      this.setState({
+        basketItems: [...filterBasketItems],
+        basketCountItems: calcBasketCountItems,
+        basketTotalPrice: calcBasketTotalPrice,
+      });
+    } catch (e) {
+      this.setState({ requestErrMsg: e.toString() });
+    } finally {
+      this._onLoadChange(false);
+    }
   };
 
   renderBasketButton() {
     if (this.state.isLoading) {
-      return <Loader height={'64px'} width={'64px'} />;
+      return <Loader height={'64'} width={'64'} />;
     }
 
-    if (this.state.isRequestErr) {
-      return <h1>{this.state.isRequestErr}</h1>;
+    if (this.state.requestErrMsg) {
+      return <h1>{this.state.requestErrMsg}</h1>;
     }
 
     return (
@@ -134,7 +143,6 @@ class Basket extends React.Component {
       />
     );
   }
-  BasketButton;
 
   render() {
     return (
@@ -143,6 +151,7 @@ class Basket extends React.Component {
           isBasketDetailHidden={this.state.isBasketDetailHidden}
           basketItems={this.state.basketItems}
           basketTotalPrice={this.state.basketTotalPrice}
+          isBasketLoading={this.state.isLoading}
           toggleBasketDetail={this.toggleBasketDetail}
           deleteDishFromBasket={this.deleteDishFromBasket}
         />

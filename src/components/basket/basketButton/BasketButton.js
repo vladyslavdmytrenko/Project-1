@@ -1,7 +1,8 @@
 import React from 'react';
 
-import style from './BasketButton.module.css';
 import { ReactComponent as BasketIcon } from 'assets/images/basket.svg';
+
+import style from './BasketButton.module.css';
 
 const BasketButton = (props) => {
   return (

@@ -1,7 +1,8 @@
 import React from 'react';
 
-import style from './BasketDetails.module.css';
 import BasketDetailItem from './BasketDetailItem/BasketDetailItem';
+
+import style from './BasketDetails.module.css';
 
 const BasketDetails = (props) => {
   return (
@@ -18,10 +19,8 @@ const BasketDetails = (props) => {
         {props.basketItems.map((item) => (
           <BasketDetailItem
             key={item.id}
-            id={item.id}
-            name={item.name}
-            count={item.count}
-            price={item.price}
+            item={item}
+            isBasketLoading={props.isBasketLoading}
             deleteDishFromBasket={props.deleteDishFromBasket}
           />
         ))}

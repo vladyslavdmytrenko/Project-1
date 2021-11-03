@@ -14,7 +14,7 @@ class Dish extends React.Component {
       dishes: [],
       prevSearchDishValue: '',
       isLoading: false,
-      isRequestErr: null,
+      requestErrMsg: null,
     };
   }
 
@@ -37,7 +37,7 @@ class Dish extends React.Component {
         dishes: data.data,
       });
     } catch (e) {
-      this.setState({ isRequestErr: e.toString() });
+      this.setState({ requestErrMsg: e.toString() });
     } finally {
       this.setState({ isLoading: false });
     }
@@ -59,8 +59,8 @@ class Dish extends React.Component {
     if (this.state.isLoading) {
       return <Loader />;
     }
-    if (this.state.isRequestErr) {
-      return <h1>{this.state.isRequestErr}</h1>;
+    if (this.state.requestErrMsg) {
+      return <h1>{this.state.requestErrMsg}</h1>;
     }
     return this.state.dishes.length ? (
       this.state.dishes.map((item) => (
@@ -68,6 +68,7 @@ class Dish extends React.Component {
           key={item.id}
           dish={item}
           onAddDishToBasket={this.props.onAddDishToBasket}
+          disableBtn={this.props.isBasketBusy}
         />
       ))
     ) : (

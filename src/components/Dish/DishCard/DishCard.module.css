@@ -43,3 +43,8 @@
   cursor: pointer;
   background-color: var(--btn-bg-color-hover);
 }
+
+.btn:disabled {
+  cursor: not-allowed;
+  background-color: var(--btn-disable-bg-color);
+}

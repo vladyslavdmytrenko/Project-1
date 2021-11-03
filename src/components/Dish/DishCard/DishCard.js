@@ -19,6 +19,7 @@ const DishCard = (props) => {
       <button
         className={style.btn}
         onClick={() => props.onAddDishToBasket(props.dish)}
+        disabled={props.disableBtn}
       >
         Add to card
       </button>

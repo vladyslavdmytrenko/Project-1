@@ -13,6 +13,7 @@ class App extends React.Component {
     this.state = {
       searchDishValue: '',
       newDishItemToBasket: null,
+      isBasketBusy: false,
     };
   }
 
@@ -28,6 +29,10 @@ class App extends React.Component {
     this.setState({ newDishItemToBasket: null });
   };
 
+  onChangeBasketBusy = (isBusy) => {
+    this.setState({ isBasketBusy: isBusy });
+  };
+
   render() {
     return (
       <div className={style.container}>
@@ -40,10 +45,12 @@ class App extends React.Component {
           <Basket
             newDishItemToBasket={this.state.newDishItemToBasket}
             onCleanNewDishItemToBasket={this.onCleanNewDishItemToBasket}
+            onChangeBasketBusy={this.onChangeBasketBusy}
           />
         </header>
         <Dish
           searchDishValue={this.state.searchDishValue}
+          isBasketBusy={this.state.isBasketBusy}
           onAddDishToBasket={this.onAddDishToBasket}
         />
       </div>

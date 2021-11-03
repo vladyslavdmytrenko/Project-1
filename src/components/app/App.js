@@ -3,7 +3,7 @@ import React from 'react';
 import Logo from 'components/common/Logo';
 import Search from 'components/Search';
 import Basket from 'components/Basket';
-import Dish from 'components/Dish';
+import Dishes from 'components/Dishes';
 
 import style from './App.module.css';
 
@@ -48,7 +48,7 @@ class App extends React.Component {
             onChangeBasketBusy={this.onChangeBasketBusy}
           />
         </header>
-        <Dish
+        <Dishes
           searchDishValue={this.state.searchDishValue}
           isBasketBusy={this.state.isBasketBusy}
           onAddDishToBasket={this.onAddDishToBasket}

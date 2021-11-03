@@ -19,7 +19,7 @@ class Dishes extends React.Component {
   }
 
   componentDidMount() {
-    this._loadInitDishes();
+    this.loadInitDishes();
   }
 
   componentDidUpdate() {
@@ -28,7 +28,7 @@ class Dishes extends React.Component {
     }
   }
 
-  _loadInitDishes = async () => {
+  loadInitDishes = async () => {
     this.setState({ isLoading: true });
     try {
       const data = await dataApi.get('dish');

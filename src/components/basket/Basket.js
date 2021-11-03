@@ -19,7 +19,7 @@ class Basket extends React.Component {
   }
 
   componentDidMount() {
-    this._loadInitBasket();
+    this.loadInitBasket();
   }
 
   componentDidUpdate() {
@@ -28,16 +28,16 @@ class Basket extends React.Component {
     }
   }
 
-  _onLoadChange = (isLoading) => {
+  onLoadChange = (isLoading) => {
     this.props.onChangeBasketBusy(isLoading);
     this.setState({ isLoading: isLoading });
   };
 
-  _loadInitBasket = async () => {
-    this._onLoadChange(true);
+  loadInitBasket = async () => {
+    this.onLoadChange(true);
     try {
       const basket = await dataApi.get('basket');
-      const [calcBasketCountItems, calcBasketTotalPrice] = this._calcBasketInfo(
+      const [calcBasketCountItems, calcBasketTotalPrice] = this.calcBasketInfo(
         basket.data
       );
       this.setState({
@@ -48,11 +48,11 @@ class Basket extends React.Component {
     } catch (e) {
       this.setState({ requestErrMsg: e.toString() });
     } finally {
-      this._onLoadChange(false);
+      this.onLoadChange(false);
     }
   };
 
-  _calcBasketInfo = (basketItems) => {
+  calcBasketInfo = (basketItems) => {
     const basketInfo = basketItems.reduce(
       (prev, current) => {
         prev[0] += current.count;
@@ -73,7 +73,7 @@ class Basket extends React.Component {
       (item) => item.id === newItem.id
     );
     const newBasketItems = [...this.state.basketItems];
-    this._onLoadChange(true);
+    this.onLoadChange(true);
     try {
       if (existItemIdx !== -1) {
         newBasketItems[existItemIdx].count++;
@@ -101,19 +101,19 @@ class Basket extends React.Component {
       this.setState({ requestErrMsg: e.toString() });
     } finally {
       this.props.onCleanNewDishItemToBasket();
-      this._onLoadChange(false);
+      this.onLoadChange(false);
     }
   };
 
   deleteDishFromBasket = async (id) => {
-    this._onLoadChange(true);
+    this.onLoadChange(true);
     try {
       await dataApi.delete(`basket/${id}`);
       const filterBasketItems = this.state.basketItems.filter(
         (item) => item.id !== id
       );
       const [calcBasketCountItems, calcBasketTotalPrice] =
-        this._calcBasketInfo(filterBasketItems);
+        this.calcBasketInfo(filterBasketItems);
 
       this.setState({
         basketItems: [...filterBasketItems],
@@ -123,7 +123,7 @@ class Basket extends React.Component {
     } catch (e) {
       this.setState({ requestErrMsg: e.toString() });
     } finally {
-      this._onLoadChange(false);
+      this.onLoadChange(false);
     }
   };
 

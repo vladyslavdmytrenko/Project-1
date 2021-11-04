@@ -7,4 +7,8 @@ const instance = axios.create({
   baseURL: `${BASE_URL}${PORT}/`,
 });
 
+instance.interceptors.response.use((response) => {
+  return response.data;
+});
+
 export default instance;

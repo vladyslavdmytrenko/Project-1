@@ -33,8 +33,8 @@ class Dishes extends React.Component {
     try {
       const data = await dataApi.get('dish');
       this.setState({
-        dishesRaw: data.data,
-        dishes: data.data,
+        dishesRaw: data,
+        dishes: data,
       });
     } catch (e) {
       this.setState({ requestErrMsg: e.toString() });

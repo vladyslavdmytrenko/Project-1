@@ -37,11 +37,10 @@ class Basket extends React.Component {
     this.onLoadChange(true);
     try {
       const basket = await dataApi.get('basket');
-      const [calcBasketCountItems, calcBasketTotalPrice] = this.calcBasketInfo(
-        basket.data
-      );
+      const [calcBasketCountItems, calcBasketTotalPrice] =
+        this.calcBasketInfo(basket);
       this.setState({
-        basketItems: [...basket.data],
+        basketItems: [...basket],
         basketCountItems: calcBasketCountItems,
         basketTotalPrice: calcBasketTotalPrice,
       });

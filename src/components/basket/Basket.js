@@ -133,7 +133,7 @@ class Basket extends React.Component {
     }
 
     if (this.state.requestErrMsg) {
-      return <h1>{this.state.requestErrMsg}</h1>;
+      return <h1>Error</h1>;
     }
 
     return (

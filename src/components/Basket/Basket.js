@@ -1,57 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import dataApi from 'api/data';
 import BasketDetails from './BasketDetails';
 import BasketButton from './BasketButton';
 import Loader from 'components/common/Loader';
 
-class Basket extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      basketItems: [],
-      basketCountItems: 0,
-      basketTotalPrice: 0,
-      isBasketDetailHidden: true,
-      isLoading: false,
-      requestErrMsg: null,
-    };
-  }
+const Basket = (props) => {
+  const [basketItems, setBasketItems] = useState([]);
+  const [basketCountItems, setBasketCountItems] = useState(0);
+  const [basketTotalPrice, setBasketTotalPrice] = useState(0);
+  const [isBasketDetailHidden, setIsBasketDetailHidden] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestErrMsg, setRequestErrMsg] = useState(null);
 
-  componentDidMount() {
-    this.loadInitBasket();
-  }
-
-  componentDidUpdate() {
-    if (this.props.newDishItemToBasket && !this.state.isLoading) {
-      this.addDishToBasket(this.props.newDishItemToBasket);
-    }
-  }
-
-  onLoadChange = (isLoading) => {
-    this.props.onChangeBasketBusy(isLoading);
-    this.setState({ isLoading: isLoading });
+  const onLoadChange = (isLoading) => {
+    props.onChangeBasketBusy(isLoading);
+    setIsLoading(isLoading);
   };
 
-  loadInitBasket = async () => {
-    this.onLoadChange(true);
+  const loadInitBasket = async () => {
+    onLoadChange(true);
     try {
       const basket = await dataApi.get('basket');
       const [calcBasketCountItems, calcBasketTotalPrice] =
-        this.calcBasketInfo(basket);
-      this.setState({
-        basketItems: [...basket],
-        basketCountItems: calcBasketCountItems,
-        basketTotalPrice: calcBasketTotalPrice,
-      });
+        calcBasketInfo(basket);
+      setBasketItems(basket);
+      setBasketCountItems(calcBasketCountItems);
+      setBasketTotalPrice(calcBasketTotalPrice);
     } catch (e) {
-      this.setState({ requestErrMsg: e.toString() });
+      setRequestErrMsg(e.toString());
     } finally {
-      this.onLoadChange(false);
+      onLoadChange(false);
     }
   };
 
-  calcBasketInfo = (basketItems) => {
+  const calcBasketInfo = (basketItems) => {
     const basketInfo = basketItems.reduce(
       (prev, current) => {
         prev[0] += current.count;
@@ -63,16 +46,28 @@ class Basket extends React.Component {
     return basketInfo;
   };
 
-  toggleBasketDetail = () => {
-    this.setState({ isBasketDetailHidden: !this.state.isBasketDetailHidden });
+  useEffect(() => {
+    loadInitBasket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (props.newDishItemToBasket && !isLoading) {
+      addDishToBasket(props.newDishItemToBasket);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.newDishItemToBasket]);
+
+  const toggleBasketDetail = () => {
+    setIsBasketDetailHidden(!isBasketDetailHidden);
   };
 
-  addDishToBasket = async (newItem) => {
-    const existItemIdx = this.state.basketItems.findIndex(
+  const addDishToBasket = async (newItem) => {
+    const existItemIdx = basketItems.findIndex(
       (item) => item.id === newItem.id
     );
-    const newBasketItems = [...this.state.basketItems];
-    this.onLoadChange(true);
+    const newBasketItems = [...basketItems];
+    onLoadChange(true);
     try {
       if (existItemIdx !== -1) {
         newBasketItems[existItemIdx].count++;
@@ -91,73 +86,65 @@ class Basket extends React.Component {
         newBasketItems.push(results);
       }
 
-      this.setState({
-        basketItems: newBasketItems,
-        basketCountItems: this.state.basketCountItems + 1,
-        basketTotalPrice: this.state.basketTotalPrice + newItem.price,
-      });
+      setBasketItems(newBasketItems);
+      setBasketCountItems(basketCountItems + 1);
+      setBasketTotalPrice(basketTotalPrice + newItem.price);
     } catch (e) {
-      this.setState({ requestErrMsg: e.toString() });
+      setRequestErrMsg(e.toString());
     } finally {
-      this.props.onCleanNewDishItemToBasket();
-      this.onLoadChange(false);
+      props.onCleanNewDishItemToBasket();
+      onLoadChange(false);
     }
   };
 
-  deleteDishFromBasket = async (id) => {
-    this.onLoadChange(true);
+  const deleteDishFromBasket = async (id) => {
+    onLoadChange(true);
     try {
       await dataApi.delete(`basket/${id}`);
-      const filterBasketItems = this.state.basketItems.filter(
-        (item) => item.id !== id
-      );
+      const filterBasketItems = basketItems.filter((item) => item.id !== id);
       const [calcBasketCountItems, calcBasketTotalPrice] =
-        this.calcBasketInfo(filterBasketItems);
+        calcBasketInfo(filterBasketItems);
 
-      this.setState({
-        basketItems: [...filterBasketItems],
-        basketCountItems: calcBasketCountItems,
-        basketTotalPrice: calcBasketTotalPrice,
-      });
+      setBasketItems(filterBasketItems);
+      setBasketCountItems(calcBasketCountItems);
+      setBasketTotalPrice(calcBasketTotalPrice);
     } catch (e) {
-      this.setState({ requestErrMsg: e.toString() });
+      setRequestErrMsg(e.toString());
     } finally {
-      this.onLoadChange(false);
+      onLoadChange(false);
     }
   };
 
-  renderBasketButton() {
-    if (this.state.isLoading) {
+  const renderBasketButton = () => {
+    if (isLoading) {
       return <Loader height={'64'} width={'64'} />;
     }
 
-    if (this.state.requestErrMsg) {
+    if (requestErrMsg) {
       return <h1>Error</h1>;
     }
 
     return (
       <BasketButton
-        countItems={this.state.basketCountItems}
-        toggleBasketDetail={this.toggleBasketDetail}
+        countItems={basketCountItems}
+        toggleBasketDetail={toggleBasketDetail}
       />
     );
-  }
+  };
 
-  render() {
-    return (
-      <>
-        <BasketDetails
-          isBasketDetailHidden={this.state.isBasketDetailHidden}
-          basketItems={this.state.basketItems}
-          basketTotalPrice={this.state.basketTotalPrice}
-          isBasketLoading={this.state.isLoading}
-          toggleBasketDetail={this.toggleBasketDetail}
-          deleteDishFromBasket={this.deleteDishFromBasket}
-        />
-        {this.renderBasketButton()}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <BasketDetails
+        isBasketDetailHidden={isBasketDetailHidden}
+        basketItems={basketItems}
+        basketTotalPrice={basketTotalPrice}
+        isBasketLoading={isLoading}
+        toggleBasketDetail={toggleBasketDetail}
+        deleteDishFromBasket={deleteDishFromBasket}
+      />
+      {renderBasketButton()}
+    </>
+  );
+};
 
 export default Basket;

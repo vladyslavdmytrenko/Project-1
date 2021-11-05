@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Logo from 'components/common/Logo';
 import Search from 'components/Search';
@@ -7,55 +7,45 @@ import Dishes from 'components/Dishes';
 
 import style from './App.module.css';
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      searchDishValue: '',
-      newDishItemToBasket: null,
-      isBasketBusy: false,
-    };
-  }
+const App = () => {
+  const [searchDishValue, setSearchDishValue] = useState('');
+  const [newDishItemToBasket, setNewDishItemToBasket] = useState(null);
+  const [isBasketBusy, setIsBasketBusy] = useState(false);
 
-  onSearchChange = (e) => {
-    this.setState({ searchDishValue: e.target.value });
+  const onSearchChange = (e) => {
+    setSearchDishValue(e.target.value);
   };
 
-  onAddDishToBasket = (dish) => {
-    this.setState({ newDishItemToBasket: dish });
+  const onAddDishToBasket = (dish) => {
+    setNewDishItemToBasket(dish);
   };
 
-  onCleanNewDishItemToBasket = () => {
-    this.setState({ newDishItemToBasket: null });
+  const onCleanNewDishItemToBasket = () => {
+    setNewDishItemToBasket(null);
   };
 
-  onChangeBasketBusy = (isBusy) => {
-    this.setState({ isBasketBusy: isBusy });
+  const onChangeBasketBusy = (isBusy) => {
+    setIsBasketBusy(isBusy);
   };
 
-  render() {
-    return (
-      <div className={style.container}>
-        <header>
-          <Logo />
-          <Search
-            value={this.state.searchDishValue}
-            onSearchChange={this.onSearchChange}
-          />
-          <Basket
-            newDishItemToBasket={this.state.newDishItemToBasket}
-            onCleanNewDishItemToBasket={this.onCleanNewDishItemToBasket}
-            onChangeBasketBusy={this.onChangeBasketBusy}
-          />
-        </header>
-        <Dishes
-          searchDishValue={this.state.searchDishValue}
-          isBasketBusy={this.state.isBasketBusy}
-          onAddDishToBasket={this.onAddDishToBasket}
+  return (
+    <div className={style.container}>
+      <header>
+        <Logo />
+        <Search value={searchDishValue} onSearchChange={onSearchChange} />
+        <Basket
+          newDishItemToBasket={newDishItemToBasket}
+          onCleanNewDishItemToBasket={onCleanNewDishItemToBasket}
+          onChangeBasketBusy={onChangeBasketBusy}
         />
-      </div>
-    );
-  }
-}
+      </header>
+      <Dishes
+        searchDishValue={searchDishValue}
+        isBasketBusy={isBasketBusy}
+        onAddDishToBasket={onAddDishToBasket}
+      />
+    </div>
+  );
+};
 
 export default App;

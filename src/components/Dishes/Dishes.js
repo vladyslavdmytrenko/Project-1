@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import dataApi from 'api/data';
 import DishCard from './DishCard';
@@ -6,45 +6,29 @@ import Loader from 'components/common/Loader';
 
 import style from './Dishes.module.css';
 
-class Dishes extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dishesRaw: [],
-      dishes: [],
-      prevSearchDishValue: '',
-      isLoading: false,
-      requestErrMsg: null,
-    };
-  }
+const Dishes = (props) => {
+  const [dishesRaw, setDishesRaw] = useState([]);
+  const [dishes, setDishes] = useState([]);
+  const [prevSearchDishValue, setPrevSearchDishValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestErrMsg, setRequestErrMsg] = useState(null);
 
-  componentDidMount() {
-    this.loadInitDishes();
-  }
-
-  componentDidUpdate() {
-    if (this.state.prevSearchDishValue !== this.props.searchDishValue) {
-      this.filterDishesBySearchParam(this.props.searchDishValue);
-    }
-  }
-
-  loadInitDishes = async () => {
-    this.setState({ isLoading: true });
+  const loadInitDishes = async () => {
+    setIsLoading(true);
     try {
       const data = await dataApi.get('dish');
-      this.setState({
-        dishesRaw: data,
-        dishes: data,
-      });
+
+      setDishesRaw(data);
+      setDishes(data);
     } catch (e) {
-      this.setState({ requestErrMsg: e.toString() });
+      setRequestErrMsg(e.toString());
     } finally {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }
   };
 
-  filterDishesBySearchParam = (searchParam) => {
-    const filterDish = this.state.dishesRaw.filter((item) => {
+  const filterDishesBySearchParam = (searchParam) => {
+    const filterDish = dishesRaw.filter((item) => {
       return (
         item.name.toLowerCase().startsWith(searchParam.toLowerCase()) ||
         item.ingredients.find((item) =>
@@ -52,23 +36,34 @@ class Dishes extends React.Component {
         )
       );
     });
-    this.setState({ dishes: filterDish, prevSearchDishValue: searchParam });
+    setDishes(filterDish);
+    setPrevSearchDishValue(searchParam);
   };
 
-  renderDish = () => {
-    if (this.state.isLoading) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => loadInitDishes(), []);
+
+  useEffect(() => {
+    if (prevSearchDishValue !== props.searchDishValue) {
+      filterDishesBySearchParam(props.searchDishValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const renderDish = () => {
+    if (isLoading) {
       return <Loader />;
     }
-    if (this.state.requestErrMsg) {
-      return <h1>{this.state.requestErrMsg}</h1>;
+    if (requestErrMsg) {
+      return <h1>{requestErrMsg}</h1>;
     }
-    return this.state.dishes.length ? (
-      this.state.dishes.map((item) => (
+    return dishes.length ? (
+      dishes.map((item) => (
         <DishCard
           key={item.id}
           dish={item}
-          onAddDishToBasket={this.props.onAddDishToBasket}
-          disableBtn={this.props.isBasketBusy}
+          onAddDishToBasket={props.onAddDishToBasket}
+          disableBtn={props.isBasketBusy}
         />
       ))
     ) : (
@@ -76,9 +71,7 @@ class Dishes extends React.Component {
     );
   };
 
-  render() {
-    return <div className={style.dishContainer}> {this.renderDish()} </div>;
-  }
-}
+  return <div className={style.dishContainer}> {renderDish()} </div>;
+};
 
 export default Dishes;

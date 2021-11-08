@@ -1,7 +1,9 @@
 .container {
   position: relative;
 }
+
 .icon {
+  box-sizing: border-box;
   width: auto;
   padding: 0.3rem;
   height: 4rem;

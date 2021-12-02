@@ -1,22 +1,32 @@
 import React from 'react';
 
+import { IBasket } from 'types';
+
 import BasketDetailItem from './BasketDetailItem/BasketDetailItem';
 
 import style from './BasketDetails.module.css';
 
-const BasketDetails = (props) => {
+interface IProps {
+  isBasketDetailHidden: boolean,
+  isBasketLoading: boolean,
+  basketTotalPrice: number,
+  basketItems: IBasket[],
+  deleteDishFromBasket: (id: number) => void,
+  toggleBasketDetail: () => void,
+}
+
+const BasketDetails = (props: IProps) => {
   return (
     <div
-      className={`${style.cart} ${
-        props.isBasketDetailHidden ? style.hide : ''
-      }`}
+      className={`${style.cart} ${props.isBasketDetailHidden ? style.hide : ''
+        }`}
     >
       <h2>
         Cart
         <span onClick={() => props.toggleBasketDetail()}>X</span>
       </h2>
       <div className={style.itemContainer}>
-        {props.basketItems.map((item) => (
+        {props.basketItems.map((item: IBasket) => (
           <BasketDetailItem
             key={item.id}
             item={item}

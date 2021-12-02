@@ -5,18 +5,20 @@ import Search from 'components/Search';
 import Basket from 'components/Basket';
 import Dishes from 'components/Dishes';
 
+import { IDish } from 'types';
+
 import style from './App.module.css';
 
 const App = () => {
   const [searchDishValue, setSearchDishValue] = useState('');
-  const [newDishItemToBasket, setNewDishItemToBasket] = useState(null);
-  const [isBasketBusy, setIsBasketBusy] = useState(false);
+  const [newDishItemToBasket, setNewDishItemToBasket] = useState<IDish | null>(null);
+  const [isBasketBusy, setIsBasketBusy] = useState<boolean>(false);
 
-  const onSearchChange = (e) => {
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchDishValue(e.target.value);
   };
 
-  const onAddDishToBasket = (dish) => {
+  const onAddDishToBasket = (dish: IDish) => {
     setNewDishItemToBasket(dish);
   };
 
@@ -24,7 +26,7 @@ const App = () => {
     setNewDishItemToBasket(null);
   };
 
-  const onChangeBasketBusy = (isBusy) => {
+  const onChangeBasketBusy = (isBusy: boolean) => {
     setIsBasketBusy(isBusy);
   };
 

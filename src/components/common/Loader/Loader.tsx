@@ -2,12 +2,17 @@ import React from 'react';
 
 import loaderIcon from 'assets/images/loader.svg';
 
-const Loader = (props) => {
+interface IProps {
+  height?: string,
+  width?: string,
+}
+
+const Loader = (props: IProps) => {
   return (
     <img
       src={loaderIcon}
       alt="loader"
-      height={props.width}
+      height={props.height}
       width={props.width}
     />
   );

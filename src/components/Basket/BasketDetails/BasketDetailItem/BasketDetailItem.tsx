@@ -3,9 +3,17 @@ import React from 'react';
 import Loader from 'components/common/Loader';
 import { ReactComponent as DeleteIcon } from 'assets/images/delete.svg';
 
+import { IBasket } from 'types';
+
 import style from './BasketDetailItem.module.css';
 
-const BasketDetailItem = (props) => {
+interface IProps {
+  item: IBasket,
+  isBasketLoading: boolean,
+  deleteDishFromBasket: (id: number) => void
+}
+
+const BasketDetailItem = (props: IProps) => {
   return (
     <div className={style.card}>
       {props.isBasketLoading ? (

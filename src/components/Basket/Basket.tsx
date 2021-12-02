@@ -5,37 +5,48 @@ import BasketDetails from './BasketDetails';
 import BasketButton from './BasketButton';
 import Loader from 'components/common/Loader';
 
-const Basket = (props) => {
-  const [basketItems, setBasketItems] = useState([]);
-  const [basketCountItems, setBasketCountItems] = useState(0);
-  const [basketTotalPrice, setBasketTotalPrice] = useState(0);
-  const [isBasketDetailHidden, setIsBasketDetailHidden] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [requestErrMsg, setRequestErrMsg] = useState(null);
+import { IDish, IBasket } from 'types'
 
-  const onLoadChange = (isLoading) => {
+interface IProps {
+  newDishItemToBasket: IDish | null,
+  onChangeBasketBusy: (isLoading: boolean) => void,
+  onCleanNewDishItemToBasket: () => void
+}
+
+const Basket = (props: IProps) => {
+  const [basketItems, setBasketItems] = useState<IBasket[]>([]);
+  const [basketCountItems, setBasketCountItems] = useState<number>(0);
+  const [basketTotalPrice, setBasketTotalPrice] = useState<number>(0);
+  const [isBasketDetailHidden, setIsBasketDetailHidden] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [requestErrMsg, setRequestErrMsg] = useState<string | null>(null);
+
+  const onLoadChange = (isLoading: boolean) => {
     props.onChangeBasketBusy(isLoading);
     setIsLoading(isLoading);
   };
 
   const loadInitBasket = async () => {
     onLoadChange(true);
+
     try {
-      const basket = await dataApi.get('basket');
+      const basket: IBasket[] = await dataApi.get('basket');
+
       const [calcBasketCountItems, calcBasketTotalPrice] =
         calcBasketInfo(basket);
+
       setBasketItems(basket);
       setBasketCountItems(calcBasketCountItems);
       setBasketTotalPrice(calcBasketTotalPrice);
-    } catch (e) {
+    } catch (e: any) {
       setRequestErrMsg(e.toString());
     } finally {
       onLoadChange(false);
     }
   };
 
-  const calcBasketInfo = (basketItems) => {
-    const basketInfo = basketItems.reduce(
+  const calcBasketInfo = (basketItems: IBasket[]): number[] => {
+    const basketInfo: number[] = basketItems.reduce(
       (prev, current) => {
         prev[0] += current.count;
         prev[1] += current.price;
@@ -62,7 +73,7 @@ const Basket = (props) => {
     setIsBasketDetailHidden(!isBasketDetailHidden);
   };
 
-  const addDishToBasket = async (newItem) => {
+  const addDishToBasket = async (newItem: IDish) => {
     const existItemIdx = basketItems.findIndex(
       (item) => item.id === newItem.id
     );
@@ -76,7 +87,7 @@ const Basket = (props) => {
           ...newBasketItems[existItemIdx],
         });
       } else {
-        const results = {
+        const results: IBasket = {
           id: newItem.id,
           name: newItem.name,
           price: newItem.price,
@@ -89,7 +100,7 @@ const Basket = (props) => {
       setBasketItems(newBasketItems);
       setBasketCountItems(basketCountItems + 1);
       setBasketTotalPrice(basketTotalPrice + newItem.price);
-    } catch (e) {
+    } catch (e: any) {
       setRequestErrMsg(e.toString());
     } finally {
       props.onCleanNewDishItemToBasket();
@@ -97,7 +108,7 @@ const Basket = (props) => {
     }
   };
 
-  const deleteDishFromBasket = async (id) => {
+  const deleteDishFromBasket = async (id: number) => {
     onLoadChange(true);
     try {
       await dataApi.delete(`basket/${id}`);
@@ -108,7 +119,7 @@ const Basket = (props) => {
       setBasketItems(filterBasketItems);
       setBasketCountItems(calcBasketCountItems);
       setBasketTotalPrice(calcBasketTotalPrice);
-    } catch (e) {
+    } catch (e: any) {
       setRequestErrMsg(e.toString());
     } finally {
       onLoadChange(false);

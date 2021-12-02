@@ -4,7 +4,12 @@ import { ReactComponent as BasketIcon } from 'assets/images/basket.svg';
 
 import style from './BasketButton.module.css';
 
-const BasketButton = (props) => {
+interface IProps {
+  countItems: number | undefined,
+  toggleBasketDetail: () => void,
+}
+
+const BasketButton = (props: IProps) => {
   return (
     <div className={style.container} onClick={() => props.toggleBasketDetail()}>
       <BasketIcon className={style.icon} />

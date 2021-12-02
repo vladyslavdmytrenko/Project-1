@@ -6,28 +6,36 @@ import Loader from 'components/common/Loader';
 
 import style from './Dishes.module.css';
 
-const Dishes = (props) => {
-  const [dishesRaw, setDishesRaw] = useState([]);
-  const [dishes, setDishes] = useState([]);
+import { IDish } from 'types';
+
+interface IProps {
+  searchDishValue: string,
+  isBasketBusy: boolean,
+  onAddDishToBasket: (dish: IDish) => void
+}
+
+const Dishes = (props: IProps) => {
+  const [dishesRaw, setDishesRaw] = useState<IDish[]>([]);
+  const [dishes, setDishes] = useState<IDish[]>([]);
   const [prevSearchDishValue, setPrevSearchDishValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [requestErrMsg, setRequestErrMsg] = useState(null);
 
-  const loadInitDishes = async () => {
+  const loadInitDishes = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      const data = await dataApi.get('dish');
+      const data: IDish[] = await dataApi.get('dish');
 
       setDishesRaw(data);
       setDishes(data);
-    } catch (e) {
+    } catch (e: any) {
       setRequestErrMsg(e.toString());
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterDishesBySearchParam = (searchParam) => {
+  const filterDishesBySearchParam = (searchParam: string) => {
     const filterDish = dishesRaw.filter((item) => {
       return (
         item.name.toLowerCase().startsWith(searchParam.toLowerCase()) ||
@@ -41,7 +49,9 @@ const Dishes = (props) => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => loadInitDishes(), []);
+  useEffect(() => {
+    loadInitDishes()
+  }, []);
 
   useEffect(() => {
     if (prevSearchDishValue !== props.searchDishValue) {

@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 import style from './Search.module.css';
 
-const Search = (props) => {
+interface IProps {
+  value: string,
+  onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+const Search = (props: IProps) => {
   return (
     <input
       type="text"

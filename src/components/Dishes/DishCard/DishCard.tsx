@@ -2,8 +2,15 @@ import React from 'react';
 
 import style from './DishCard.module.css';
 import imageMeal from 'assets/images/meal.png';
+import { IDish } from 'types';
 
-const DishCard = (props) => {
+interface IProps {
+  dish: IDish,
+  disableBtn: boolean
+  onAddDishToBasket: (dish: IDish) => void
+}
+
+const DishCard = (props: IProps) => {
   const { imgSrc, name, price, ingredients } = props.dish;
 
   return (

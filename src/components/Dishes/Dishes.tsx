@@ -58,7 +58,7 @@ const Dishes = (props: IProps) => {
       filterDishesBySearchParam(props.searchDishValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [prevSearchDishValue, props.searchDishValue]);
 
   const renderDish = () => {
     if (isLoading) {
